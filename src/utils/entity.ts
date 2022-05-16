@@ -1,7 +1,9 @@
-import { EntitySchema, InstanceChecker, ObjectType } from 'typeorm';
+import { EntitySchema, InstanceChecker, ObjectType } from "@bouncecode/typeorm";
 
-export function getEntityName<O>(entity: ObjectType<O> | EntitySchema<O>) : string {
-    if (typeof entity === 'function') {
+export function getEntityName<O>(
+    entity: ObjectType<O> | EntitySchema<O>
+): string {
+    if (typeof entity === "function") {
         return entity.name;
     }
 

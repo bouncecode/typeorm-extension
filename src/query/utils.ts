@@ -1,17 +1,17 @@
-import { Parameter, ParseOutput } from '@trapi/query';
+import { Parameter, ParseOutput } from "@trapi/query";
 
-import { SelectQueryBuilder } from 'typeorm';
+import { SelectQueryBuilder } from "@bouncecode/typeorm";
 import {
     applyQueryFieldsParseOutput,
     applyQueryFiltersParseOutput,
     applyQueryPaginationParseOutput,
     applyQueryRelationsParseOutput,
-} from './parameter';
+} from "./parameter";
 
 export function applyQueryParseOutput<T>(
     query: SelectQueryBuilder<T>,
-    context: ParseOutput,
-) : ParseOutput {
+    context: ParseOutput
+): ParseOutput {
     const keys = Object.keys(context);
 
     for (let i = 0; i < keys.length; i++) {

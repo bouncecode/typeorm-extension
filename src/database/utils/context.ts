@@ -1,8 +1,14 @@
-import { DataSourceOptions } from 'typeorm';
-import { DatabaseBaseContext, DatabaseCreateContext, DatabaseDropContext } from '../type';
-import { buildDataSourceOptions, findDataSource } from '../../data-source';
+import { DataSourceOptions } from "@bouncecode/typeorm";
+import {
+    DatabaseBaseContext,
+    DatabaseCreateContext,
+    DatabaseDropContext,
+} from "../type";
+import { buildDataSourceOptions, findDataSource } from "../../data-source";
 
-async function setDatabaseContextOptions<T extends DatabaseBaseContext>(context: T) : Promise<T> {
+async function setDatabaseContextOptions<T extends DatabaseBaseContext>(
+    context: T
+): Promise<T> {
     if (!context.options) {
         const dataSource = await findDataSource(context.findOptions);
         if (dataSource) {
@@ -20,7 +26,9 @@ async function setDatabaseContextOptions<T extends DatabaseBaseContext>(context:
         migrationsRun: false,
         dropSchema: false,
         logging: [
-            ...(process.env.NODE_ENV !== 'test' ? ['query', 'error', 'schema'] : []),
+            ...(process.env.NODE_ENV !== "test"
+                ? ["query", "error", "schema"]
+                : []),
         ],
     } as DataSourceOptions);
 
@@ -28,17 +36,17 @@ async function setDatabaseContextOptions<T extends DatabaseBaseContext>(context:
 }
 
 export async function buildDatabaseCreateContext(
-    context?: DatabaseCreateContext,
-) : Promise<DatabaseCreateContext> {
+    context?: DatabaseCreateContext
+): Promise<DatabaseCreateContext> {
     context = context || {};
 
     context = await setDatabaseContextOptions(context);
 
-    if (typeof context.synchronize === 'undefined') {
+    if (typeof context.synchronize === "undefined") {
         context.synchronize = true;
     }
 
-    if (typeof context.ifNotExist === 'undefined') {
+    if (typeof context.ifNotExist === "undefined") {
         context.ifNotExist = true;
     }
 
@@ -46,12 +54,12 @@ export async function buildDatabaseCreateContext(
 }
 
 export async function buildDatabaseDropContext(
-    context?: DatabaseDropContext,
-) : Promise<DatabaseDropContext> {
+    context?: DatabaseDropContext
+): Promise<DatabaseDropContext> {
     context = context || {};
     context = await setDatabaseContextOptions(context);
 
-    if (typeof context.ifExist === 'undefined') {
+    if (typeof context.ifExist === "undefined") {
         context.ifExist = true;
     }
 

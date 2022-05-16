@@ -1,6 +1,6 @@
-import { parseQueryPagination } from '@trapi/query';
-import { SelectQueryBuilder } from 'typeorm';
-import { PaginationApplyOptions, PaginationApplyOutput } from './type';
+import { parseQueryPagination } from "@trapi/query";
+import { SelectQueryBuilder } from "@bouncecode/typeorm";
+import { PaginationApplyOptions, PaginationApplyOutput } from "./type";
 
 /**
  * Apply parsed page/pagination parameter data on the db query.
@@ -10,19 +10,19 @@ import { PaginationApplyOptions, PaginationApplyOutput } from './type';
  */
 export function applyQueryPaginationParseOutput<T>(
     query: SelectQueryBuilder<T>,
-    data: PaginationApplyOutput,
+    data: PaginationApplyOutput
 ) {
     /* istanbul ignore next */
-    if (typeof data.limit !== 'undefined') {
+    if (typeof data.limit !== "undefined") {
         query.take(data.limit);
 
-        if (typeof data.offset === 'undefined') {
+        if (typeof data.offset === "undefined") {
             query.skip(0);
         }
     }
 
     /* istanbul ignore next */
-    if (typeof data.offset !== 'undefined') {
+    if (typeof data.offset !== "undefined") {
         query.skip(data.offset);
     }
 
@@ -39,9 +39,12 @@ export function applyQueryPaginationParseOutput<T>(
 export function applyQueryPagination<T>(
     query: SelectQueryBuilder<T>,
     data: unknown,
-    options?: PaginationApplyOptions,
-) : PaginationApplyOutput {
-    return applyQueryPaginationParseOutput(query, parseQueryPagination(data, options));
+    options?: PaginationApplyOptions
+): PaginationApplyOutput {
+    return applyQueryPaginationParseOutput(
+        query,
+        parseQueryPagination(data, options)
+    );
 }
 
 /**
@@ -54,7 +57,7 @@ export function applyQueryPagination<T>(
 export function applyPagination<T>(
     query: SelectQueryBuilder<T>,
     data: unknown,
-    options?: PaginationApplyOptions,
-) : PaginationApplyOutput {
+    options?: PaginationApplyOptions
+): PaginationApplyOutput {
     return applyQueryPagination(query, data, options);
 }

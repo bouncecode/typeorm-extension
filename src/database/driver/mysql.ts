@@ -1,19 +1,23 @@
-import { MysqlDriver } from 'typeorm/driver/mysql/MysqlDriver';
-import { DatabaseCreateContext, DatabaseDropContext } from '../type';
-import { DriverOptions } from './type';
-import { buildDriverOptions, createDriver } from './utils';
-import { buildDatabaseCreateContext, buildDatabaseDropContext, synchronizeDatabase } from '../utils';
+import { MysqlDriver } from "@bouncecode/typeorm/driver/mysql/MysqlDriver";
+import { DatabaseCreateContext, DatabaseDropContext } from "../type";
+import { DriverOptions } from "./type";
+import { buildDriverOptions, createDriver } from "./utils";
+import {
+    buildDatabaseCreateContext,
+    buildDatabaseDropContext,
+    synchronizeDatabase,
+} from "../utils";
 
 export async function createSimpleMySQLConnection(
     driver: MysqlDriver,
-    options: DriverOptions,
+    options: DriverOptions
 ) {
     /**
      * mysql|mysql2 library
      */
     const { createConnection } = driver.mysql;
 
-    const option : Record<string, any> = {
+    const option: Record<string, any> = {
         host: options.host,
         user: options.user,
         password: options.password,
@@ -25,8 +29,12 @@ export async function createSimpleMySQLConnection(
     return createConnection(option);
 }
 
-export async function executeSimpleMysqlQuery(connection: any, query: string, endConnection = true) {
-    return new Promise(((resolve, reject) => {
+export async function executeSimpleMysqlQuery(
+    connection: any,
+    query: string,
+    endConnection = true
+) {
+    return new Promise((resolve, reject) => {
         connection.query(query, (queryErr: any, queryResult: any) => {
             if (endConnection) connection.end();
 
@@ -36,12 +44,10 @@ export async function executeSimpleMysqlQuery(connection: any, query: string, en
 
             resolve(queryResult);
         });
-    }));
+    });
 }
 
-export async function createMySQLDatabase(
-    context?: DatabaseCreateContext,
-) {
+export async function createMySQLDatabase(context?: DatabaseCreateContext) {
     context = await buildDatabaseCreateContext(context);
 
     const options = buildDriverOptions(context.options);
@@ -51,23 +57,23 @@ export async function createMySQLDatabase(
     /**
      * @link https://github.com/typeorm/typeorm/blob/master/src/driver/mysql/MysqlQueryRunner.ts#L297
      */
-    let query = context.ifNotExist ?
-        `CREATE DATABASE IF NOT EXISTS \`${options.database}\`` :
-        `CREATE DATABASE \`${options.database}\``;
+    let query = context.ifNotExist
+        ? `CREATE DATABASE IF NOT EXISTS \`${options.database}\``
+        : `CREATE DATABASE \`${options.database}\``;
 
-    if (typeof options.charset === 'string') {
+    if (typeof options.charset === "string") {
         const { charset } = options;
         let { characterSet } = options;
 
-        if (typeof characterSet === 'undefined') {
-            if (charset.toLowerCase().startsWith('utf8mb4')) {
-                characterSet = 'utf8mb4';
-            } else if (charset.toLowerCase().startsWith('utf8')) {
-                characterSet = 'utf8';
+        if (typeof characterSet === "undefined") {
+            if (charset.toLowerCase().startsWith("utf8mb4")) {
+                characterSet = "utf8mb4";
+            } else if (charset.toLowerCase().startsWith("utf8")) {
+                characterSet = "utf8";
             }
         }
 
-        if (typeof characterSet === 'string') {
+        if (typeof characterSet === "string") {
             query += ` CHARACTER SET ${characterSet} COLLATE ${charset}`;
         }
     }
@@ -81,9 +87,7 @@ export async function createMySQLDatabase(
     return result;
 }
 
-export async function dropMySQLDatabase(
-    context?: DatabaseDropContext,
-) {
+export async function dropMySQLDatabase(context?: DatabaseDropContext) {
     context = await buildDatabaseDropContext(context);
 
     const options = buildDriverOptions(context.options);
@@ -94,12 +98,16 @@ export async function dropMySQLDatabase(
     /**
      * @link https://github.com/typeorm/typeorm/blob/master/src/driver/mysql/MysqlQueryRunner.ts#L306
      */
-    const query = context.ifExist ?
-        `DROP DATABASE IF EXISTS \`${options.database}\`` :
-        `DROP DATABASE \`${options.database}\``;
+    const query = context.ifExist
+        ? `DROP DATABASE IF EXISTS \`${options.database}\``
+        : `DROP DATABASE \`${options.database}\``;
 
-    await executeSimpleMysqlQuery(connection, 'SET FOREIGN_KEY_CHECKS=0;', false);
+    await executeSimpleMysqlQuery(
+        connection,
+        "SET FOREIGN_KEY_CHECKS=0;",
+        false
+    );
     const result = await executeSimpleMysqlQuery(connection, query, false);
-    await executeSimpleMysqlQuery(connection, 'SET FOREIGN_KEY_CHECKS=1;');
+    await executeSimpleMysqlQuery(connection, "SET FOREIGN_KEY_CHECKS=1;");
     return result;
 }

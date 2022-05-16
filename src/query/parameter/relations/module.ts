@@ -1,6 +1,6 @@
-import { RelationsParseOutput, parseQueryRelations } from '@trapi/query';
-import { SelectQueryBuilder } from 'typeorm';
-import { RelationsApplyOptions, RelationsApplyOutput } from './type';
+import { RelationsParseOutput, parseQueryRelations } from "@trapi/query";
+import { SelectQueryBuilder } from "@bouncecode/typeorm";
+import { RelationsApplyOptions, RelationsApplyOutput } from "./type";
 
 /**
  * Apply parsed include/relation parameter data on the db query.
@@ -10,8 +10,8 @@ import { RelationsApplyOptions, RelationsApplyOutput } from './type';
  */
 export function applyQueryRelationsParseOutput<T>(
     query: SelectQueryBuilder<T>,
-    data: RelationsParseOutput,
-) : RelationsApplyOutput {
+    data: RelationsParseOutput
+): RelationsApplyOutput {
     for (let i = 0; i < data.length; i++) {
         /* istanbul ignore next */
         query.leftJoinAndSelect(data[i].key, data[i].value);
@@ -30,9 +30,12 @@ export function applyQueryRelationsParseOutput<T>(
 export function applyQueryRelations<T>(
     query: SelectQueryBuilder<T>,
     data: unknown,
-    options?: RelationsApplyOptions,
-) : RelationsApplyOutput {
-    return applyQueryRelationsParseOutput(query, parseQueryRelations(data, options));
+    options?: RelationsApplyOptions
+): RelationsApplyOutput {
+    return applyQueryRelationsParseOutput(
+        query,
+        parseQueryRelations(data, options)
+    );
 }
 
 /**
@@ -45,7 +48,7 @@ export function applyQueryRelations<T>(
 export function applyRelations<T>(
     query: SelectQueryBuilder<T>,
     data: unknown,
-    options?: RelationsApplyOptions,
-) : RelationsApplyOutput {
+    options?: RelationsApplyOptions
+): RelationsApplyOutput {
     return applyQueryRelations(query, data, options);
 }

@@ -1,14 +1,18 @@
-import { SqlServerDriver } from 'typeorm/driver/sqlserver/SqlServerDriver';
-import { DatabaseCreateContext, DatabaseDropContext } from '../type';
-import { DriverOptions } from './type';
-import { buildDriverOptions, createDriver } from './utils';
-import { buildDatabaseCreateContext, buildDatabaseDropContext, synchronizeDatabase } from '../utils';
+import { SqlServerDriver } from "@bouncecode/typeorm/driver/sqlserver/SqlServerDriver";
+import { DatabaseCreateContext, DatabaseDropContext } from "../type";
+import { DriverOptions } from "./type";
+import { buildDriverOptions, createDriver } from "./utils";
+import {
+    buildDatabaseCreateContext,
+    buildDatabaseDropContext,
+    synchronizeDatabase,
+} from "../utils";
 
 export async function createSimpleMsSQLConnection(
     driver: SqlServerDriver,
-    options: DriverOptions,
+    options: DriverOptions
 ) {
-    const option : Record<string, any> = {
+    const option: Record<string, any> = {
         user: options.user,
         password: options.password,
         server: options.host,
@@ -22,9 +26,7 @@ export async function createSimpleMsSQLConnection(
     return driver.mssql;
 }
 
-export async function createMsSQLDatabase(
-    context?: DatabaseCreateContext,
-) {
+export async function createMsSQLDatabase(context?: DatabaseCreateContext) {
     context = await buildDatabaseCreateContext(context);
 
     const options = buildDriverOptions(context.options);
@@ -34,11 +36,11 @@ export async function createMsSQLDatabase(
     /**
      * @link https://github.com/typeorm/typeorm/blob/master/src/driver/sqlserver/SqlServerQueryRunner.ts#L416
      */
-    let query = context.ifNotExist ?
-        `IF DB_ID('${options.database}') IS NULL CREATE DATABASE "${options.database}"` :
-        `CREATE DATABASE "${options.database}"`;
+    let query = context.ifNotExist
+        ? `IF DB_ID('${options.database}') IS NULL CREATE DATABASE "${options.database}"`
+        : `CREATE DATABASE "${options.database}"`;
 
-    if (typeof options.characterSet === 'string') {
+    if (typeof options.characterSet === "string") {
         query += ` CHARACTER SET ${options.characterSet}`;
     }
 
@@ -51,9 +53,7 @@ export async function createMsSQLDatabase(
     return result;
 }
 
-export async function dropMsSQLDatabase(
-    context?: DatabaseDropContext,
-) {
+export async function dropMsSQLDatabase(context?: DatabaseDropContext) {
     context = await buildDatabaseDropContext(context);
 
     const options = buildDriverOptions(context.options);
@@ -63,9 +63,9 @@ export async function dropMsSQLDatabase(
     /**
      * @link https://github.com/typeorm/typeorm/blob/master/src/driver/sqlserver/SqlServerQueryRunner.ts#L425
      */
-    const query = context.ifExist ?
-        `IF DB_ID('${options.database}') IS NOT NULL DROP DATABASE "${options.database}"` :
-        `DROP DATABASE "${options.database}"`;
+    const query = context.ifExist
+        ? `IF DB_ID('${options.database}') IS NOT NULL DROP DATABASE "${options.database}"`
+        : `DROP DATABASE "${options.database}"`;
 
     return connection.query(query);
 }

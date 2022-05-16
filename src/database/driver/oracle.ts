@@ -1,17 +1,17 @@
-import { OracleDriver } from 'typeorm/driver/oracle/OracleDriver';
-import { DatabaseCreateContext, DatabaseDropContext } from '../type';
-import { DriverOptions } from './type';
-import { buildDriverOptions, createDriver } from './utils';
-import { buildDatabaseCreateContext, synchronizeDatabase } from '../utils';
+import { OracleDriver } from "@bouncecode/typeorm/driver/oracle/OracleDriver";
+import { DatabaseCreateContext, DatabaseDropContext } from "../type";
+import { DriverOptions } from "./type";
+import { buildDriverOptions, createDriver } from "./utils";
+import { buildDatabaseCreateContext, synchronizeDatabase } from "../utils";
 
 export function createSimpleOracleConnection(
     driver: OracleDriver,
-    options: DriverOptions,
+    options: DriverOptions
 ) {
     const { getConnection } = driver.oracle;
 
     if (!options.connectString) {
-        let address = '(PROTOCOL=TCP)';
+        let address = "(PROTOCOL=TCP)";
 
         if (options.host) {
             address += `(HOST=${options.host})`;
@@ -21,7 +21,7 @@ export function createSimpleOracleConnection(
             address += `(PORT=${options.port})`;
         }
 
-        let connectData = '(SERVER=DEDICATED)';
+        let connectData = "(SERVER=DEDICATED)";
 
         if (options.sid) {
             connectData += `(SID=${options.sid})`;
@@ -42,9 +42,7 @@ export function createSimpleOracleConnection(
     });
 }
 
-export async function createOracleDatabase(
-    context?: DatabaseCreateContext,
-) {
+export async function createOracleDatabase(context?: DatabaseCreateContext) {
     context = await buildDatabaseCreateContext(context);
 
     const options = buildDriverOptions(context.options);
@@ -65,9 +63,7 @@ export async function createOracleDatabase(
     return result;
 }
 
-export async function dropOracleDatabase(
-    context?: DatabaseDropContext,
-) {
+export async function dropOracleDatabase(context?: DatabaseDropContext) {
     /**
      * @link https://github.com/typeorm/typeorm/blob/master/src/driver/oracle/OracleQueryRunner.ts#L295
      */

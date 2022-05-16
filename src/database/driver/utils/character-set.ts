@@ -1,15 +1,17 @@
-import { DataSourceOptions } from 'typeorm';
-import { hasOwnProperty } from '../../../utils';
+import { DataSourceOptions } from "@bouncecode/typeorm";
+import { hasOwnProperty } from "../../../utils";
 
-export function getCharacterSetFromDataSourceOptions(options: DataSourceOptions) : string | undefined {
+export function getCharacterSetFromDataSourceOptions(
+    options: DataSourceOptions
+): string | undefined {
     if (
-        hasOwnProperty(options, 'characterSet') &&
-        typeof options.characterSet === 'string'
+        hasOwnProperty(options, "characterSet") &&
+        typeof options.characterSet === "string"
     ) {
         return options.characterSet;
     }
 
-    if (typeof options?.extra?.characterSet === 'string') {
+    if (typeof options?.extra?.characterSet === "string") {
         return options.extra.characterSet;
     }
 

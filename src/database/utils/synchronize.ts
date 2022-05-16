@@ -1,4 +1,4 @@
-import { DataSource, DataSourceOptions } from 'typeorm';
+import { DataSource, DataSourceOptions } from "@bouncecode/typeorm";
 
 export async function synchronizeDatabase(options: DataSourceOptions) {
     const dataSource = new DataSource(options);

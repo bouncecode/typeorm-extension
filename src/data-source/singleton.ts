@@ -1,28 +1,25 @@
-import { DataSource, DataSourceOptions } from 'typeorm';
-import { useDataSourceOptions } from './options';
+import { DataSource, DataSourceOptions } from "@bouncecode/typeorm";
+import { useDataSourceOptions } from "./options";
 
-const instances : Record<string, DataSource> = {};
+const instances: Record<string, DataSource> = {};
 
-const initializePromises : Record<string, Promise<DataSource>> = {};
+const initializePromises: Record<string, Promise<DataSource>> = {};
 const optionsPromises: Record<string, Promise<DataSourceOptions>> = {};
 
-export function setDataSource(
-    dataSource: DataSource,
-    alias?: string,
-) {
-    alias = alias || 'default';
+export function setDataSource(dataSource: DataSource, alias?: string) {
+    alias = alias || "default";
 
     instances[alias] = dataSource;
 }
 
-export function isSetDataSource(alias?: string) : boolean {
-    alias = alias || 'default';
+export function isSetDataSource(alias?: string): boolean {
+    alias = alias || "default";
 
     return Object.prototype.hasOwnProperty.call(instances, alias);
 }
 
 export function unsetDataSource(alias?: string) {
-    alias = alias || 'default';
+    alias = alias || "default";
 
     if (Object.prototype.hasOwnProperty.call(instances, alias)) {
         delete instances[alias];
@@ -39,13 +36,15 @@ export function unsetDataSource(alias?: string) {
     }
 }
 
-export async function useDataSource(alias?: string) : Promise<DataSource> {
-    alias = alias || 'default';
+export async function useDataSource(alias?: string): Promise<DataSource> {
+    alias = alias || "default";
 
     if (Object.prototype.hasOwnProperty.call(instances, alias)) {
         if (!instances[alias].isInitialized) {
             /* istanbul ignore next */
-            if (!Object.prototype.hasOwnProperty.call(initializePromises, alias)) {
+            if (
+                !Object.prototype.hasOwnProperty.call(initializePromises, alias)
+            ) {
                 initializePromises[alias] = instances[alias].initialize();
             }
 

@@ -1,22 +1,24 @@
-import { DataSourceOptions } from 'typeorm';
-import { DriverUtils } from 'typeorm/driver/DriverUtils';
-import { getCharsetFromDataSourceOptions } from './charset';
-import { getCharacterSetFromDataSourceOptions } from './character-set';
-import { DriverOptions } from '../type';
+import { DataSourceOptions } from "@bouncecode/typeorm";
+import { DriverUtils } from "@bouncecode/typeorm/driver/DriverUtils";
+import { getCharsetFromDataSourceOptions } from "./charset";
+import { getCharacterSetFromDataSourceOptions } from "./character-set";
+import { DriverOptions } from "../type";
 
 export function buildDriverOptions(options: DataSourceOptions): DriverOptions {
     let driverOptions: Record<string, any>;
 
     switch (options.type) {
-        case 'mysql':
-        case 'mariadb':
-        case 'postgres':
-        case 'cockroachdb':
-        case 'mssql':
-        case 'oracle':
-            driverOptions = DriverUtils.buildDriverOptions(options.replication ? options.replication.master : options);
+        case "mysql":
+        case "mariadb":
+        case "postgres":
+        case "cockroachdb":
+        case "mssql":
+        case "oracle":
+            driverOptions = DriverUtils.buildDriverOptions(
+                options.replication ? options.replication.master : options
+            );
             break;
-        case 'mongodb':
+        case "mongodb":
             driverOptions = DriverUtils.buildMongoDBDriverOptions(options);
             break;
         default:
@@ -36,9 +38,13 @@ export function buildDriverOptions(options: DataSourceOptions): DriverOptions {
         ...(characterSet ? { characterSet } : {}),
         ...(driverOptions.ssl ? { ssl: driverOptions.ssl } : {}),
         ...(driverOptions.url ? { url: driverOptions.url } : {}),
-        ...(driverOptions.connectString ? { connectString: driverOptions.connectString } : {}),
+        ...(driverOptions.connectString
+            ? { connectString: driverOptions.connectString }
+            : {}),
         ...(driverOptions.sid ? { sid: driverOptions.sid } : {}),
-        ...(driverOptions.serviceName ? { serviceName: driverOptions.serviceName } : {}),
+        ...(driverOptions.serviceName
+            ? { serviceName: driverOptions.serviceName }
+            : {}),
         ...(options.extra ? { extra: options.extra } : {}),
         ...(driverOptions.domain ? { domain: driverOptions.domain } : {}),
     };

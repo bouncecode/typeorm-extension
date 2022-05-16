@@ -1,5 +1,5 @@
-import { DataSourceOptions } from 'typeorm';
-import { DataSourceFindOptions } from '../data-source';
+import { DataSourceOptions } from "@bouncecode/typeorm";
+import { DataSourceFindOptions } from "../data-source";
 
 export type DatabaseBaseContext = {
     /**
@@ -7,12 +7,12 @@ export type DatabaseBaseContext = {
      *
      * Default: undefined
      */
-    options?: DataSourceOptions,
+    options?: DataSourceOptions;
 
     /**
      * Options for the find method, where to look for the data-source file.
      */
-    findOptions?: DataSourceFindOptions
+    findOptions?: DataSourceFindOptions;
 };
 
 export type DatabaseCreateContext = DatabaseBaseContext & {
@@ -21,19 +21,19 @@ export type DatabaseCreateContext = DatabaseBaseContext & {
      *
      * default: true
      */
-    ifNotExist?: boolean,
+    ifNotExist?: boolean;
     /**
      * Initial database to connect.
      *
      * default: undefined
      */
-    initialDatabase?: string,
+    initialDatabase?: string;
     /**
      * Synchronize database entities.
      *
      * default: true
      */
-    synchronize?: boolean
+    synchronize?: boolean;
 };
 
 export type DatabaseDropContext = DatabaseBaseContext & {
@@ -42,5 +42,5 @@ export type DatabaseDropContext = DatabaseBaseContext & {
      *
      * Default: true
      */
-    ifExist?: boolean
+    ifExist?: boolean;
 };

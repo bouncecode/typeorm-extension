@@ -1,15 +1,15 @@
 {
-    "name": "typeorm-extension",
-    "version": "2.1.2",
+    "name": "@bouncecode/typeorm-extension",
+    "version": "2.1.2-alpha.1",
     "description": "Typeorm extension to create/drop database, simple seeding data sets, ...",
     "author": {
-        "name": "Peter Placzek",
-        "email": "contact@tada5hi.net",
-        "url": "https://github.com/tada5hi"
+        "name": "bouncecode",
+        "email": "getbouncecode@gmail.com",
+        "url": "https://github.com/bouncecode/typeorm-extension"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/tada5hi/typeorm-extension.git"
+        "url": "https://github.com/bouncecode/typeorm-extension.git"
     },
     "main": "dist/index.js",
     "files": [
@@ -63,7 +63,7 @@
         "np": "^7.6.1",
         "ts-jest": "^27.1.4",
         "ts-node": "^10.7.0",
-        "typeorm": "^0.3.6",
+        "@bouncecode/typeorm": "^0.3.6-alpha.4",
         "typescript": "^4.6.4"
     }
 }

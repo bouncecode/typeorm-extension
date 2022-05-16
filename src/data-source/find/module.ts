@@ -1,17 +1,15 @@
-import path from 'path';
-import { DataSource, InstanceChecker } from 'typeorm';
-import { loadScriptFile, locateFile } from 'locter';
-import { DataSourceFindOptions } from './type';
-import { isTsNodeRuntimeEnvironment } from '../../utils';
-import { readTsConfig } from '../../utils/tsconfig';
-import { changeTSToJSPath } from '../options';
+import path from "path";
+import { DataSource, InstanceChecker } from "@bouncecode/typeorm";
+import { loadScriptFile, locateFile } from "locter";
+import { DataSourceFindOptions } from "./type";
+import { isTsNodeRuntimeEnvironment } from "../../utils";
+import { readTsConfig } from "../../utils/tsconfig";
+import { changeTSToJSPath } from "../options";
 
 export async function findDataSource(
-    context?: DataSourceFindOptions,
-) : Promise<DataSource | undefined> {
-    const fileNames : string[] = [
-        'data-source',
-    ];
+    context?: DataSourceFindOptions
+): Promise<DataSource | undefined> {
+    const fileNames: string[] = ["data-source"];
 
     context = context || {};
 
@@ -19,28 +17,23 @@ export async function findDataSource(
         fileNames.unshift(context.fileName);
     }
 
-    const basePaths = [
-        process.cwd(),
-    ];
+    const basePaths = [process.cwd()];
 
-    if (
-        context.directory &&
-        context.directory !== process.cwd()
-    ) {
-        context.directory = path.isAbsolute(context.directory) ?
-            context.directory :
-            path.join(process.cwd(), context.directory);
+    if (context.directory && context.directory !== process.cwd()) {
+        context.directory = path.isAbsolute(context.directory)
+            ? context.directory
+            : path.join(process.cwd(), context.directory);
 
         basePaths.unshift(context.directory);
     }
 
     const directories = [
-        path.join('src', 'db'),
-        path.join('src', 'database'),
-        path.join('src'),
+        path.join("src", "db"),
+        path.join("src", "database"),
+        path.join("src"),
     ];
 
-    let paths : string[] = [];
+    let paths: string[] = [];
     for (let i = 0; i < basePaths.length; i++) {
         paths.push(basePaths[i]);
 
@@ -57,7 +50,9 @@ export async function findDataSource(
         for (let i = 0; i < basePaths.length; i++) {
             const { compilerOptions } = await readTsConfig(basePaths[i]);
             if (compilerOptions) {
-                paths = paths.map((item) => changeTSToJSPath(item, { dist: compilerOptions.outDir }));
+                paths = paths.map((item) =>
+                    changeTSToJSPath(item, { dist: compilerOptions.outDir })
+                );
                 tsConfigFound = true;
                 break;
             }
@@ -71,7 +66,7 @@ export async function findDataSource(
     for (let i = 0; i < fileNames.length; i++) {
         const info = await locateFile(fileNames[i], {
             paths,
-            extensions: ['.js', '.ts'],
+            extensions: [".js", ".ts"],
         });
 
         if (info) {
@@ -80,7 +75,7 @@ export async function findDataSource(
                 return fileExports;
             }
 
-            if (typeof fileExports === 'object') {
+            if (typeof fileExports === "object") {
                 const keys = Object.keys(fileExports);
                 for (let j = 0; j < keys.length; j++) {
                     const value = (fileExports as Record<string, any>)[keys[i]];

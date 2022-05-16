@@ -1,15 +1,19 @@
-import { Seeder, SeederFactoryManager } from '../../../src';
-import { DataSource } from 'typeorm';
-import { User } from '../entity/user';
+import { Seeder, SeederFactoryManager } from "../../../src";
+import { DataSource } from "@bouncecode/typeorm";
+import { User } from "../entity/user";
 
 export default class UserSeeder implements Seeder {
     public async run(
         dataSource: DataSource,
         factoryManager?: SeederFactoryManager
-    ) : Promise<void> {
-        const repository =  dataSource.getRepository(User);
+    ): Promise<void> {
+        const repository = dataSource.getRepository(User);
         await repository.insert([
-            {firstName: 'Caleb', lastName: 'Barrows', email: 'caleb.barrows@gmail.com'}
+            {
+                firstName: "Caleb",
+                lastName: "Barrows",
+                email: "caleb.barrows@gmail.com",
+            },
         ]);
 
         // ---------------------------------------------------

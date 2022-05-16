@@ -1,17 +1,22 @@
-import { ConnectionOptionsReader, DataSourceOptions } from 'typeorm';
-import { DataSourceOptionsBuildContext } from './type';
-import { setDefaultSeederOptions } from '../../seeder';
-import { modifyDataSourceOptionsForRuntimeEnvironment } from './utils';
-import { readTsConfig } from '../../utils/tsconfig';
-import { findDataSource } from '../find';
+import {
+    ConnectionOptionsReader,
+    DataSourceOptions,
+} from "@bouncecode/typeorm";
+import { DataSourceOptionsBuildContext } from "./type";
+import { setDefaultSeederOptions } from "../../seeder";
+import { modifyDataSourceOptionsForRuntimeEnvironment } from "./utils";
+import { readTsConfig } from "../../utils/tsconfig";
+import { findDataSource } from "../find";
 
 export async function extendDataSourceOptions(
     options: DataSourceOptions,
-    tsConfigDirectory?: string,
-) : Promise<DataSourceOptions> {
+    tsConfigDirectory?: string
+): Promise<DataSourceOptions> {
     options = setDefaultSeederOptions(options);
 
-    let { compilerOptions } = await readTsConfig(tsConfigDirectory || process.cwd());
+    let { compilerOptions } = await readTsConfig(
+        tsConfigDirectory || process.cwd()
+    );
     compilerOptions = compilerOptions || {};
 
     modifyDataSourceOptionsForRuntimeEnvironment(options, {
@@ -28,17 +33,20 @@ export async function extendDataSourceOptions(
  * @param context
  */
 export async function buildLegacyDataSourceOptions(
-    context: DataSourceOptionsBuildContext,
-) : Promise<DataSourceOptions> {
-    const directory : string = context.directory || process.cwd();
-    const tsconfigDirectory : string = context.tsconfigDirectory || process.cwd();
+    context: DataSourceOptionsBuildContext
+): Promise<DataSourceOptions> {
+    const directory: string = context.directory || process.cwd();
+    const tsconfigDirectory: string =
+        context.tsconfigDirectory || process.cwd();
 
     const connectionOptionsReader = new ConnectionOptionsReader({
         root: directory,
         configName: context.configName,
     });
 
-    const dataSourceOptions = await connectionOptionsReader.get(context.name || 'default');
+    const dataSourceOptions = await connectionOptionsReader.get(
+        context.name || "default"
+    );
 
     return extendDataSourceOptions(dataSourceOptions, tsconfigDirectory);
 }
@@ -49,12 +57,13 @@ export async function buildLegacyDataSourceOptions(
  * @param context
  */
 export async function buildDataSourceOptions(
-    context?: DataSourceOptionsBuildContext,
-) : Promise<DataSourceOptions> {
+    context?: DataSourceOptionsBuildContext
+): Promise<DataSourceOptions> {
     context = context ?? {};
 
-    const directory : string = context.directory || process.cwd();
-    const tsconfigDirectory : string = context.tsconfigDirectory || process.cwd();
+    const directory: string = context.directory || process.cwd();
+    const tsconfigDirectory: string =
+        context.tsconfigDirectory || process.cwd();
 
     const dataSource = await findDataSource({
         directory,
@@ -62,10 +71,7 @@ export async function buildDataSourceOptions(
     });
 
     if (dataSource) {
-        return extendDataSourceOptions(
-            dataSource.options,
-            tsconfigDirectory,
-        );
+        return extendDataSourceOptions(dataSource.options, tsconfigDirectory);
     }
 
     return buildLegacyDataSourceOptions(context);

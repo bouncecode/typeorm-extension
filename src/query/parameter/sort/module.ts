@@ -1,6 +1,6 @@
-import { SortDirection, SortParseOutput, parseQuerySort } from '@trapi/query';
-import { SelectQueryBuilder } from 'typeorm';
-import { SortApplyOptions, SortApplyOutput } from './type';
+import { SortDirection, SortParseOutput, parseQuerySort } from "@trapi/query";
+import { SelectQueryBuilder } from "@bouncecode/typeorm";
+import { SortApplyOptions, SortApplyOutput } from "./type";
 
 // --------------------------------------------------
 
@@ -12,16 +12,16 @@ import { SortApplyOptions, SortApplyOutput } from './type';
  */
 export function applyQuerySortParseOutput<T>(
     query: SelectQueryBuilder<T>,
-    data: SortParseOutput,
-) : SortApplyOutput {
+    data: SortParseOutput
+): SortApplyOutput {
     if (data.length === 0) {
         return data;
     }
 
-    const sort : Record<string, SortDirection> = {};
+    const sort: Record<string, SortDirection> = {};
 
     for (let i = 0; i < data.length; i++) {
-        const prefix : string = data[i].alias ? `${data[i].alias}.` : '';
+        const prefix: string = data[i].alias ? `${data[i].alias}.` : "";
         const key = `${prefix}${data[i].key}`;
 
         sort[key] = data[i].value;
@@ -42,8 +42,8 @@ export function applyQuerySortParseOutput<T>(
 export function applyQuerySort<T>(
     query: SelectQueryBuilder<T>,
     data: unknown,
-    options?: SortApplyOptions,
-) : SortParseOutput {
+    options?: SortApplyOptions
+): SortParseOutput {
     return applyQuerySortParseOutput(query, parseQuerySort(data, options));
 }
 
@@ -57,7 +57,7 @@ export function applyQuerySort<T>(
 export function applySort<T>(
     query: SelectQueryBuilder<T>,
     data: unknown,
-    options?: SortApplyOptions,
-) : SortParseOutput {
+    options?: SortApplyOptions
+): SortParseOutput {
     return applyQuerySortParseOutput(query, parseQuerySort(data, options));
 }

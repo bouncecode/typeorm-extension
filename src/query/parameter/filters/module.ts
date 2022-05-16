@@ -1,96 +1,94 @@
-import {
-    FiltersParseOutput,
-    parseQueryFilters,
-} from '@trapi/query';
+import { FiltersParseOutput, parseQueryFilters } from "@trapi/query";
 
-import { Brackets, SelectQueryBuilder } from 'typeorm';
+import { Brackets, SelectQueryBuilder } from "@bouncecode/typeorm";
 import {
-    FiltersApplyOptions, FiltersApplyOutput, FiltersTransformOptions, FiltersTransformOutput,
-} from './type';
+    FiltersApplyOptions,
+    FiltersApplyOutput,
+    FiltersTransformOptions,
+    FiltersTransformOutput,
+} from "./type";
 
 // --------------------------------------------------
 
 export function transformParsedFilters(
     data: FiltersParseOutput,
-    options?: FiltersTransformOptions,
-) : FiltersTransformOutput {
+    options?: FiltersTransformOptions
+): FiltersTransformOutput {
     options ??= {};
 
-    const items : FiltersTransformOutput = [];
+    const items: FiltersTransformOutput = [];
 
     for (let i = 0; i < data.length; i++) {
-        const fullKey : string = (data[i].alias ? `${data[i].alias}.` : '') + data[i].key;
+        const fullKey: string =
+            (data[i].alias ? `${data[i].alias}.` : "") + data[i].key;
 
         const filter = data[i];
         filter.operator ??= {};
 
-        const statement : string[] = [
-            fullKey,
-        ];
+        const statement: string[] = [fullKey];
 
         if (
-            typeof filter.value === 'undefined' ||
+            typeof filter.value === "undefined" ||
             filter.value === null ||
-            `${filter.value}`.toLowerCase() === 'null'
+            `${filter.value}`.toLowerCase() === "null"
         ) {
-            statement.push('IS');
+            statement.push("IS");
 
             if (filter.operator.negation) {
-                statement.push('NOT');
+                statement.push("NOT");
             }
 
-            statement.push('NULL');
+            statement.push("NULL");
 
             items.push({
-                statement: statement.join(' '),
+                statement: statement.join(" "),
                 binding: {},
             });
         } else if (
-            typeof filter.value === 'string' ||
-            typeof filter.value === 'number' ||
-            typeof filter.value === 'boolean' ||
+            typeof filter.value === "string" ||
+            typeof filter.value === "number" ||
+            typeof filter.value === "boolean" ||
             Array.isArray(filter.value)
         ) {
             if (
-                (
-                    typeof filter.value === 'string' ||
-                    typeof filter.value === 'number'
-                ) &&
+                (typeof filter.value === "string" ||
+                    typeof filter.value === "number") &&
                 filter.operator.like
             ) {
-                filter.value += '%';
+                filter.value += "%";
             }
 
             if (filter.operator.in || filter.operator.like) {
                 if (filter.operator.negation) {
-                    statement.push('NOT');
+                    statement.push("NOT");
                 }
 
                 if (filter.operator.like) {
-                    statement.push('LIKE');
+                    statement.push("LIKE");
                 } else if (filter.operator.in) {
-                    statement.push('IN');
+                    statement.push("IN");
                 }
             } else if (filter.operator.negation) {
-                statement.push('!=');
+                statement.push("!=");
             } else if (filter.operator.lessThan) {
-                statement.push('<');
+                statement.push("<");
             } else if (filter.operator.lessThanEqual) {
-                statement.push('<=');
+                statement.push("<=");
             } else if (filter.operator.moreThan) {
-                statement.push('>');
+                statement.push(">");
             } else if (filter.operator.moreThanEqual) {
-                statement.push('>=');
+                statement.push(">=");
             } else {
-                statement.push('=');
+                statement.push("=");
             }
 
-            let bindingKey : string | undefined = typeof options.bindingKeyFn === 'function' ?
-                options.bindingKeyFn(fullKey) :
-                undefined;
+            let bindingKey: string | undefined =
+                typeof options.bindingKeyFn === "function"
+                    ? options.bindingKeyFn(fullKey)
+                    : undefined;
 
-            if (typeof bindingKey === 'undefined') {
-                bindingKey = `filter_${fullKey.replace('.', '_')}`;
+            if (typeof bindingKey === "undefined") {
+                bindingKey = `filter_${fullKey.replace(".", "_")}`;
             }
 
             if (filter.operator.in) {
@@ -100,7 +98,7 @@ export function transformParsedFilters(
             }
 
             items.push({
-                statement: statement.join(' '),
+                statement: statement.join(" "),
                 binding: { [bindingKey]: filter.value },
             });
         }
@@ -117,22 +115,24 @@ export function transformParsedFilters(
  */
 export function applyFiltersTransformed<T>(
     query: SelectQueryBuilder<T>,
-    data: FiltersTransformOutput,
-) : FiltersTransformOutput {
+    data: FiltersTransformOutput
+): FiltersTransformOutput {
     if (data.length === 0) {
         return data;
     }
 
     /* istanbul ignore next */
-    query.andWhere(new Brackets((qb) => {
-        for (let i = 0; i < data.length; i++) {
-            if (i === 0) {
-                qb.where(data[i].statement, data[i].binding);
-            } else {
-                qb.andWhere(data[i].statement, data[i].binding);
+    query.andWhere(
+        new Brackets((qb) => {
+            for (let i = 0; i < data.length; i++) {
+                if (i === 0) {
+                    qb.where(data[i].statement, data[i].binding);
+                } else {
+                    qb.andWhere(data[i].statement, data[i].binding);
+                }
             }
-        }
-    }));
+        })
+    );
 
     return data;
 }
@@ -147,8 +147,8 @@ export function applyFiltersTransformed<T>(
 export function applyQueryFiltersParseOutput<T>(
     query: SelectQueryBuilder<T>,
     data: FiltersParseOutput,
-    options?: FiltersTransformOptions,
-) : FiltersApplyOutput {
+    options?: FiltersTransformOptions
+): FiltersApplyOutput {
     applyFiltersTransformed(query, transformParsedFilters(data, options));
 
     return data;
@@ -166,8 +166,8 @@ export function applyQueryFiltersParseOutput<T>(
 export function applyQueryFilters(
     query: SelectQueryBuilder<any> | undefined,
     data: unknown,
-    options?: FiltersApplyOptions,
-) : FiltersApplyOutput {
+    options?: FiltersApplyOptions
+): FiltersApplyOutput {
     options ??= {};
 
     const { transform: transformOptions, ...parseOptions } = options;
@@ -175,7 +175,7 @@ export function applyQueryFilters(
     return applyQueryFiltersParseOutput(
         query,
         parseQueryFilters(data, parseOptions),
-        transformOptions,
+        transformOptions
     );
 }
 
@@ -189,7 +189,7 @@ export function applyQueryFilters(
 export function applyFilters(
     query: SelectQueryBuilder<any> | undefined,
     data: unknown,
-    options?: FiltersApplyOptions,
-) : FiltersApplyOutput {
+    options?: FiltersApplyOptions
+): FiltersApplyOutput {
     return applyQueryFilters(query, data, options);
 }
